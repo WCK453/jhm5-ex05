@@ -1,0 +1,29 @@
+<html lang="zh_TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HKDSE Score Analyzer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>HKDSE Score Analyzer</h1>
+    </header>
+    <main>
+        <section id="input-section">
+            <h2>輸入成績</h2>
+            <form id="score-form">
+                <label for="subject">科目:</label>
+                <input type="text" id="subject" name="subject" required>
+                <label for="score">成績 (1-5**):</label>
+                <input type="text" id="score" name="score" required pattern="^(5\*\*|5\*|5|4|3|2|1)$">
+                <button type="submit">提交</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 HKDSE Score Analyzer</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
