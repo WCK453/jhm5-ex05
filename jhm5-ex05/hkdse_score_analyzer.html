@@ -111,77 +111,100 @@
             <h2>輸入成績</h2>
             <form id="score-form">
                 <label for="subject">科目:</label>
-                <input type="text" id="subject" name="subject" required>
-                <label for="score">成績 (1-5**):</label>
-                <input type="text" id="score" name="score" required pattern="^(5\*\*|5\*|5|4|3|2|1)$">
-                <button type="submit">提交</button>
+                <section id="subjects-container">
+                    <label for="Chinese Language">中文:</label>
+                    <input type="text" name="subject-1" class="subject" required>
+                    <label for="level-1">級別:</label>
+                    <select name="level-1" class="level" required>
+                        <option value="5**">5**</option>
+                        <option value="5*">5*</option>
+                        <option value="5">5</option>
+                        <option value="4">4</option>
+                        <option value="3">3</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
+                        <option value="U">U</option>
+                    </select>
+                    <label for="English Language">英文:</label>
+                    <input type="text" name="subject-2" class="subject" required>
+                    <label for="level-2">級別:</label>
+                    <select name="level-2" class="level" required>
+                        <option value="5**">5**</option>
+                        <option value="5*">5*</option>
+                        <option value="5">5</option>
+                        <option value="4">4</option>
+                        <option value="3">3</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
+                        <option value="U">U</option>
+                    </select>
+                    <label for="Mathematics">數學:</label>
+                    <input type="text" name="subject-3" class="subject" required>
+                    <label for="level-3">級別:</label>
+                    <select name="level-3" class="level" required>
+                        <option value="5**">5**</option>
+                        <option value="5*">5*</option>
+                        <option value="5">5</option>
+                        <option value="4">4</option>
+                        <option value="3">3</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
+                        <option value="U">U</option>
+                    </select>
+                    <br>
+                    <select name="CS" class="CS">
+                        <option value="pass">核心科目</option>
+                        <option value="not pass">非核心科目</option>
+                    </select>
+                </section>
+                <button type="button" id="add-subject">新增科目</button>
+                <section id="elective-subjects">
+                    <label for="subject-4">科目:</label>
+                    <select name="subject-4" class="subject">
+                        <option value="Biology">生物</option>
+                        <option value="Chemistry">化學</option>
+                        <option value="Physics">物理</option>
+                        <option value="Economics">經濟</option>
+                        <option value="Business, Accounting and Financial Studies">企業、會計與財務概論</option>
+                        <option value="Geography">地理</option>
+                        <option value="History">歷史</option>
+                        <option value="Chinese History">中國歷史</option>
+                        <option value="Information and Communication Technology">資訊及通訊科技</option>
+                        <option value="Health Management and Social Care">健康管理與社會關懷</option>
+                        <option value="Tourism and Hospitality Studies">旅遊與款待服務</option>
+                        <option value="Visual Arts">視覺藝術</option>
+                        <option value="Music">音樂</option>
+                        <option value="Physical Education">體育</option>
+                    </select>
+                    <select name="level-4" class="level">
+                        <option value="5**">5**</option>
+                        <option value="5*">5*</option>
+                        <option value="5">5</option>
+                        <option value="4">4</option>
+                        <option value="3">3</option>
+                        <option value="2">2</option>
+                        <option value="1">1</option>
+                        <option value="U">U</option>
+                    </select>
+                    <br>
+                </section>
+                <button type="button" id="remove-subject">刪除科目</button>
+                <button type="submit">分析成績</button> 
             </form>
+        </section>
+        <section id="result" style="display:none;">
+            <h2>成績分析結果</h2>
+            <div id="result-content"></div>
+        </section>
+        <section id="error" style="display:none;">
+            <h2>錯誤</h2>
+            <div id="error-content"></div>
         </section>
     </main>
     <footer>
         <p>&copy; 2024 HKDSE Score Analyzer</p>
     </footer>
     <script>
-        document.getElementById('score-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const subject = document.getElementById('subject').value.trim();
-            const score = document.getElementById('score').value.trim();
-
-            // Clear previous results or errors
-            const existingResult = document.getElementById('result');
-            const existingError = document.getElementById('error');
-            if (existingResult) existingResult.remove();
-            if (existingError) existingError.remove();
-
-            // Validate input
-            if (!subject || !score) {
-                displayError('請填寫所有欄位。');
-                return;
-            }
-
-            const validScores = ['1', '2', '3', '4', '5', '5*', '5**'];
-            if (!validScores.includes(score)) {
-                displayError('成績必須是 1, 2, 3, 4, 5, 5*, 或 5**。');
-                return;
-            }
-
-            // Display result
-            displayResult(subject, score);
-        });
-
-        function displayResult(subject, score) {
-            const resultDiv = document.createElement('div');
-            resultDiv.id = 'result';
-            resultDiv.innerHTML = `
-                <h2>成績分析結果</h2>
-                <p>科目: <strong>${subject}</strong></p>
-                <p>成績: <strong>${score}</strong></p>
-                <p>分析:</p>
-                <ul>
-                    <li>1: 基本水平</li>
-                    <li>2: 中等水平</li>
-                    <li>3: 良好水平</li>
-                    <li>4: 優秀水平</li>
-                    <li>5: 卓越水平</li>
-                    <li>5*: 卓越水平（優異）</li>
-                    <li>5**: 卓越水平（極優異）</li>
-                </ul>
-                <strong>請根據您的成績選擇適合的升學或就業路徑。</strong>
-            `;
-            document.querySelector('main').appendChild(resultDiv);
-        }
-
-        function displayError(message) {
-            const errorDiv = document.createElement('div');
-            errorDiv.id = 'error';
-            errorDiv.innerHTML = `
-                <h2>錯誤</h2>
-                <p>${message}</p>
-                <strong>請修正錯誤後重新提交。</strong>
-            `;
-            document.querySelector('main').appendChild(errorDiv);
-        }
     </script>
 </body>
 </html>
