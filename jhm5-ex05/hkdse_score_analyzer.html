@@ -113,7 +113,6 @@
                 <label for="subject">科目:</label>
                 <section id="subjects-container">
                     <label for="Chinese Language">中文:</label>
-                    <input type="text" name="subject-1" class="subject" required>
                     <label for="level-1">級別:</label>
                     <select name="level-1" class="level" required>
                         <option value="5**">5**</option>
@@ -126,7 +125,6 @@
                         <option value="U">U</option>
                     </select>
                     <label for="English Language">英文:</label>
-                    <input type="text" name="subject-2" class="subject" required>
                     <label for="level-2">級別:</label>
                     <select name="level-2" class="level" required>
                         <option value="5**">5**</option>
@@ -139,7 +137,6 @@
                         <option value="U">U</option>
                     </select>
                     <label for="Mathematics">數學:</label>
-                    <input type="text" name="subject-3" class="subject" required>
                     <label for="level-3">級別:</label>
                     <select name="level-3" class="level" required>
                         <option value="5**">5**</option>
@@ -153,9 +150,9 @@
                     </select>
                     <br>
                     <label for="CS">科目:</label>
-                    <select name="CS" class="CS">
-                        <option value="pass">核心科目</option>
-                        <option value="not pass">非核心科目</option>
+                    <select name="pass" class="pass">
+                        <option value="pass">A</option>
+                        <option value="not pass">U</option>
                     </select>
                 </section>
                 <section id="elective-subjects">
@@ -187,9 +184,9 @@
                         <option value="U">U</option>
                     </select>
                     <br>
+                    <button type="button" id="add-subject">新增科目</button>
+                    <button type="button" id="remove-subject">移除科目</button>
                 </section>
-                <button type="button" id="add-subject">新增科目</button>
-                <button type="button" id="remove-subject">刪除科目</button>
                 <button type="submit">分析成績</button> 
             </form>
         </section>
