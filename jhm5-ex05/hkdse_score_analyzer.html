@@ -150,44 +150,45 @@
                     </select>
                     <br>
                     <label for="CS">科目:</label>
-                    <select name="pass" class="pass">
+                    <select name="CS" class="subject">
                         <option value="pass">A</option>
                         <option value="not pass">U</option>
                     </select>
                 </section>
-                <section id="elective-subjects">
-                    <label for="subject-4">科目:</label>
-                    <select name="subject-4" class="subject">
-                        <option value="Biology">生物</option>
-                        <option value="Chemistry">化學</option>
-                        <option value="Physics">物理</option>
-                        <option value="Economics">經濟</option>
-                        <option value="Business, Accounting and Financial Studies">企業、會計與財務概論</option>
-                        <option value="Geography">地理</option>
-                        <option value="History">歷史</option>
-                        <option value="Chinese History">中國歷史</option>
-                        <option value="Information and Communication Technology">資訊及通訊科技</option>
-                        <option value="Health Management and Social Care">健康管理與社會關懷</option>
-                        <option value="Tourism and Hospitality Studies">旅遊與款待服務</option>
-                        <option value="Visual Arts">視覺藝術</option>
-                        <option value="Music">音樂</option>
-                        <option value="Physical Education">體育</option>
-                    </select>
-                    <select name="level-4" class="level">
-                        <option value="5**">5**</option>
-                        <option value="5*">5*</option>
-                        <option value="5">5</option>
-                        <option value="4">4</option>
-                        <option value="3">3</option>
-                        <option value="2">2</option>
-                        <option value="1">1</option>
-                        <option value="U">U</option>
-                    </select>
-                    <br>
-                    <button type="button" id="add-subject">新增科目</button>
-                    <button type="button" id="remove-subject">移除科目</button>
-                </section>
-                <button type="submit">分析成績</button> 
+                <button type="button" id="add-subject-btn">添加選修科目</button>
+                <div id="additional-subjects">
+                    <div class="subject-group">
+                        <label for="subject-5">科目:</label>
+                        <select name="subject-5" class="subject">
+                            <option value="Biology">生物</option>
+                            <option value="Chemistry">化學</option>
+                            <option value="Physics">物理</option>
+                            <option value="Economics">經濟</option>
+                            <option value="Business, Accounting and Financial Studies">企業、會計與財務概論</option>
+                            <option value="Geography">地理</option>
+                            <option value="History">歷史</option>
+                            <option value="Chinese History">中國歷史</option>
+                            <option value="Information and Communication Technology">資訊及通訊科技</option>
+                            <option value="Health Management and Social Care">健康管理與社會關懷</option>
+                            <option value="Tourism and Hospitality Studies">旅遊與款待服務</option>
+                            <option value="Visual Arts">視覺藝術</option>
+                            <option value="Music">音樂</option>
+                            <option value="Physical Education">體育</option>
+                        </select>
+                        <label for="level-5">級別:</label>
+                        <select name="level-5" class="level" required>
+                            <option value="5**">5**</option>
+                            <option value="5*">5*</option>
+                            <option value="5">5</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1</option>
+                            <option value="U">U</option>
+                        </select>
+                        <button type="button" class="remove-subject-btn">移除</button>
+                    </div>
+                </div>
             </form>
         </section>
         <section id="result" style="display:none;">
