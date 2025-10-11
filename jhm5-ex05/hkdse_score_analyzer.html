@@ -149,19 +149,19 @@
                         <option value="U">U</option>
                     </select>
                     <br>
-                    <label for="CS">通識:</label>
+                    <label for="CS">科目:通識</label>
                     <select name="CS" class="subject">
                         <option value="pass">A</option>
                         <option value="not pass">U</option>
                     </select>
-                </section>
-                <button type="button" id="add-subject">新增科目</button>
+                    </section>
+                <button type="button" id="add-subject">添加科目</button>
                 <section id="additional-subjects">
                     <div class="subject-group">
                         </select>
                 </section>
                 <br>
-                <button type="submit" id="analyze-button">分析成績</button>
+                <button type="button" id="analyze-button">分析成績</button>
             </form>
         </section>
         <section id="result" style="display:none;">
@@ -183,6 +183,7 @@
             const div = document.createElement('div');
             div.className = 'subject-group';
             div.innerHTML = `
+                <label for="subject-name-${subjectCount}">科目名稱:</label>
                 <select name="subject-name-${subjectCount}" class="subject" required>
                     <option value="Physics">物理</option>
                     <option value="Chemistry">化學</option>
