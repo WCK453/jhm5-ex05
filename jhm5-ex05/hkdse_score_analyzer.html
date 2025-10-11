@@ -149,7 +149,7 @@
                         <option value="U">U</option>
                     </select>
                     <br>
-                    <label for="CS">科目:通識</label>
+                    <label for="CS">通識:</label>
                     <select name="CS" class="subject">
                         <option value="pass">A</option>
                         <option value="not pass">U</option>
@@ -270,33 +270,47 @@
                 results.push({subject, level, score});
             }
             const averageScore = validSubjects > 0 ? (totalScore / validSubjects).toFixed(2) : 0;
-            displayResults(results, totalScore, averageScore);
+            displayResults(results, universitycondition, averageScore, estimateRank(totalScore));
         }
-        function displayResults(results, universitycondition, averageScore, rankinHK)
-        {
+        function displayResults(results, universitycondition, averageScore, estimatedRank) {
             let resultHTML = '<ul>';
-            results.forEach(result => {
-                resultHTML += `<li>${result.subject}: ${result.level} (分數: ${result.score})</li>`;
+            results.forEach(res => {
+                resultHTML += `<li>${res.subject}: 級別 ${res.level} - 分數 ${res.score}</li>`;
             });
             resultHTML += '</ul>';
-            resultHTML += `<strong>總分: ${universitycondition}</strong>`;
-            if (results.some(r => r.subject === 'Chinese Language' && r.level == '3,4,5,5*,5**', r.score >= 3) &&
-                results.some(r => r.subject === 'English Language' && r.level == '3,4,5,5*,5**', r.score >= 3) &&
-                results.some(r => r.subject === 'Mathematics' && r.level == '2,3,4,5,5*,5**', r.score >= 3) &&
-                results.some(r => r.subject === 'CS' && r.level != 'U', r.score >= 1)) {  
-                resultHTML += `<strong>符合大學入學條件</strong>`;
-            } else {
-                resultHTML += `<strong>不符合大學入學條件</strong>`;
-            }         
+            resultHTML += `<strong>大學入學條件: ${universitycondition}</strong>`;
+            if (universitycondition === 'JUPAS') {
+                resultHTML += `<strong>JUPAS 入學條件: 33222</strong>`;
+                if (results.some(r => r.subject === 'Chinese Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
+                    results.some(r => r.subject === 'English Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
+                    results.some(r => r.subject === 'Mathematics' && (r.level === '2' || r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
+                    results.some(r => r.subject === 'CS' && r.level !== 'U') &&
+                    results.filter(r => r.subject !== 'Chinese Language' && r.subject !== 'English Language' && r.subject !== 'Mathematics' && r.subject !== 'CS' && r.level !== 'U').length >= 2) {
+                    resultHTML += `<strong>符合 JUPAS 入學條件</strong>`;
+                }
+            } else if (universitycondition === 'Non-JUPAS') {
+                resultHTML += `<strong>Non-JUPAS 入學條件: 33333</strong>`;
+                if (results.some(r => r.subject === 'Chinese Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
+                    results.some(r => r.subject === 'English Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
+                    results.some(r => r.subject === 'Mathematics' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
+                    results.some(r => r.subject === 'CS' && r.level !== 'U') &&
+                    results.filter(r => r.subject !== 'Chinese Language' && r.subject !== 'English Language' && r.subject !== 'Mathematics' && r.subject !== 'CS' && r.level !== 'U').length >= 3) {
+                    resultHTML += `<strong>符合 Non-JUPAS 入學條件</strong>`;
+                }
+            }
+            resultHTML += `<strong>總分: ${results.reduce((acc, cur) => acc + cur.score, 0)}</strong>`;
             resultHTML += `<strong>平均分: ${averageScore}</strong>`;
+            resultHTML += `<strong>估計排名: ${estimatedRank}</strong>`;
             document.getElementById('result-content').innerHTML = resultHTML;
             document.getElementById('result').style.display = 'block';
-            document.getElementById('error').style.display = 'none';
         }
-        resultHTML += `<strong>香港排名估計: ${rankinHK}</strong>`;
-            document.getElementById('result-content').innerHTML = resultHTML;
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('error').style.display = 'none';
+        function estimateRank(totalScore) {
+            if (totalScore >= 30) return '前1%';
+            if (totalScore >= 25) return '前5%';
+            if (totalScore >= 20) return '前10%';
+            if (totalScore >= 15) return '前20%';
+            return '20%以上';
+        }
     </script>
 </body>
 </html>
