@@ -217,13 +217,16 @@
             }
         });
         document.getElementById('analyze-button').addEventListener('click', function() {
-            if (validateInput()) {
-                analyzeScores();
-            } else {
+            const resultSection = document.getElementById('result');
+            const errorSection = document.getElementById('error');
+            resultSection.style.display = 'none';
+            errorSection.style.display = 'none';
+            if (!validateInput()) {
                 document.getElementById('error-content').innerHTML = '<p>請確保所有科目均已選擇級別。</p>';
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('result').style.display = 'none';
+                errorSection.style.display = 'block';
+                return;
             }
+            analyzeScores();
         });
         function validateInput() {
             const levels = document.getElementsByClassName('level');
