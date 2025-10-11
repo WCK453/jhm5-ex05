@@ -207,7 +207,16 @@
             subjectGroup.className = 'subject-group';
             subjectGroup.innerHTML = `
                 <label for="subject-${subjectCount}">科目:</label>
-                <input type="text" id="subject-${subjectCount}" name="subject-${subjectCount}" class="subject" placeholder="例如: 物理" required>
+                <select name="subject-${subjectCount}" class="subject" required>
+                    <option value="">選擇科目</option>
+                    <option value="Biology">生物</option>
+                    <option value="Chemistry">化學</option>
+                    <option value="Physics">物理</option>
+                    <option value="History">歷史</option>
+                    <option value="Geography">地理</option>
+                    <option value="Economics">經濟</option>
+                    <option value="Business, Accounting and Financial Studies">企業、會計與財務概論</option>
+                    <option value="Information and Communication Technology">資訊及通訊科技</option>
                 <label for="level-${subjectCount}">級別:</label>
                 <select name="level-${subjectCount}" class="level" required>
                     <option value="5**">5**</option>
