@@ -251,7 +251,7 @@
                     }
                 }
             }
-            const universityCondition = formData.get('universitycondition');
+            const universityCondition = document.getElementById('score-form');
             if (!subjects.some(s => s.name === 'Chinese Language') || !subjects.some(s => s.name === 'English Language') || !subjects.some(s => s.name === 'Mathematics') || !subjects.some(s => s.name === 'CS')) {
                 displayError('請確保已輸入中文、英文、數學和通識成績。');
                 return;
