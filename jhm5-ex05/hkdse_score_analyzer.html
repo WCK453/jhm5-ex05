@@ -220,90 +220,80 @@
             if (validateInput()) {
                 analyzeScores();
             } else {
-                const errorSection = document.getElementById('error');
-                const errorContent = document.getElementById('error-content');
-                errorContent.innerHTML = '<p><strong>請確保所有科目均已選擇級別。</strong></p>';
-                errorSection.style.display = 'block';
+                document.getElementById('error-content').innerHTML = '<p>請確保所有科目均已選擇級別。</p>';
+                document.getElementById('error').style.display = 'block';
                 document.getElementById('result').style.display = 'none';
             }
         });
-        document.getElementById('score-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            if (validateInput()) {
-                analyzeScores();
-            } else {
-                const errorSection = document.getElementById('error');
-                const errorContent = document.getElementById('error-content');
-                errorContent.innerHTML = '<p><strong>請確保所有科目均已選擇級別。</strong></p>';
-                errorSection.style.display = 'block';
-                document.getElementById('result').style.display = 'none';
-            }
-        });
-        function analyzeScores() {
-            const levels = document.querySelectorAll('.level');
-            const subjects = document.querySelectorAll('.subject');
-            const levelPoints = {
-                '5**': 7,
-                '5*': 6,
-                '5': 5,
-                '4': 4,
-                '3': 3,
-                '2': 2,
-                '1': 1,
-                'U': 0
-            };
-            let totalPoints = 0;
-            let validSubjects = 0;
-            let errors = [];
-            let results = [];
-
-            levels.forEach((level, index) => {
-                const subject = subjects[index].value;
-                const score = level.value;
-                if (score in levelPoints) {
-                    const points = levelPoints[score];
-                    totalPoints += points;
-                    validSubjects++;
-                    results.push(`${subject}: ${score} (${points} points)`);
-                } else {
-                    errors.push(`科目 ${subject} 的成績 "${score}" 無效。`);
+        function validateInput() {
+            const levels = document.getElementsByClassName('level');
+            for (let level of levels) {
+                if (!level.value) {
+                    return false;
                 }
-            });
-
-            const resultSection = document.getElementById('result');
-            const errorSection = document.getElementById('error');
-            const resultContent = document.getElementById('result-content');
-            const errorContent = document.getElementById('error-content');
-
-            if (errors.length > 0) {
-                errorContent.innerHTML = `<p><strong>請修正以下錯誤:</strong></p><ul>${errors.map(e => `<li>${e}</li>`).join('')}</ul>`;
-                errorSection.style.display = 'block';
-                resultSection.style.display = 'none';
-            } else {
-                const averagePoints = (validSubjects > 0) ? (totalPoints / validSubjects).toFixed(2) : 0;
-                resultContent.innerHTML = `<p><strong>總分: ${totalPoints} points</strong></p>
-                                           <p><strong>平均分: ${averagePoints} points</strong></p>
-                                           <p><strong>各科成績:</strong></p>
-                                           <ul>${results.map(r => `<li>${r}</li>`).join('')}</ul>`;
-                resultSection.style.display = 'block';
-                errorSection.style.display = 'none';
             }
+            return true;
         }
-        function resetForm() {
-            document.getElementById('score-form').reset();
-            document.getElementById('result').style.display = 'none';
+        function analyzeScores() {
+            const subjects = document.getElementsByClassName('subject');
+            const levels = document.getElementsByClassName('level');
+            let totalScore = 0;
+            let validSubjects = 0;
+            let results = [];
+            for (let i = 0; i < subjects.length; i++) {
+                const subject = subjects[i].value;
+                const level = levels[i].value;
+                let score = 0;
+                switch(level) {
+                    case '5**': score = 7; break;
+                    case '5*': score = 6; break;
+                    case '5': score = 5; break;
+                    case '4': score = 4; break;
+                    case '3': score = 3; break;
+                    case '2': score = 2; break;
+                    case '1': score = 1; break;
+                    case 'U': score = 0; break;
+                }
+                if (subject === 'CS' && level === 'U') {
+                    score = 0;
+                }
+                if (subject === 'CS' && level !== 'U') {
+                    score = 1; // 通識及格計1分
+                } 
+                if (score > 0) {
+                    totalScore += score;
+                    validSubjects++;
+                }
+                results.push({subject, level, score});
+            }
+            const averageScore = validSubjects > 0 ? (totalScore / validSubjects).toFixed(2) : 0;
+            displayResults(results, totalScore, averageScore);
+        }
+        function displayResults(results, universitycondition, averageScore, rankinHK)
+        {
+            let resultHTML = '<ul>';
+            results.forEach(result => {
+                resultHTML += `<li>${result.subject}: ${result.level} (分數: ${result.score})</li>`;
+            });
+            resultHTML += '</ul>';
+            resultHTML += `<strong>總分: ${universitycondition}</strong>`;
+            if (results.some(r => r.subject === 'Chinese Language' && r.level == '3,4,5,5*,5**', r.score >= 3) &&
+                results.some(r => r.subject === 'English Language' && r.level == '3,4,5,5*,5**', r.score >= 3) &&
+                results.some(r => r.subject === 'Mathematics' && r.level == '2,3,4,5,5*,5**', r.score >= 3) &&
+                results.some(r => r.subject === 'CS' && r.level != 'U', r.score >= 1)) {  
+                resultHTML += `<strong>符合大學入學條件</strong>`;
+            } else {
+                resultHTML += `<strong>不符合大學入學條件</strong>`;
+            }         
+            resultHTML += `<strong>平均分: ${averageScore}</strong>`;
+            document.getElementById('result-content').innerHTML = resultHTML;
+            document.getElementById('result').style.display = 'block';
             document.getElementById('error').style.display = 'none';
         }
-        function validateInput() {
-            const levels = document.querySelectorAll('.level');
-            let isValid = true;
-            levels.forEach(level => {
-                if (!level.value) {
-                    isValid = false;
-                }
-            });
-            return isValid;
-        }
+        resultHTML += `<strong>香港排名估計: ${rankinHK}</strong>`;
+            document.getElementById('result-content').innerHTML = resultHTML;
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
     </script>
 </body>
 </html>
