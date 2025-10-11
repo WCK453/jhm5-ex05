@@ -110,6 +110,12 @@
         <section id="input-section">
             <h2>輸入成績</h2>
             <form id="score-form">
+                <article>請輸入您的HKDSE成績，然後選擇大學入學條件（JUPAS或Non-JUPAS）。</article>
+                <br>
+                <article>注意：中文、英文、數學和通識為必填科目。</article>
+                <br>
+                <article>其他科目可根據需要添加。</article>
+                <br>
                 <label for="subject">科目:</label>
                 <section id="subjects-container">
                     <label for="Chinese Language">中文:</label>
@@ -162,15 +168,32 @@
                 </section>
                 <br>
                 <button type="button" id="analyze-button">分析成績</button>
+                <br><br>
+                <label for="universitycondition">大學入學條件:</label>
+                <select id="universitycondition" name="universitycondition" required>
+                    <option value="JUPAS">JUPAS</option>
+                    <option value="Non-JUPAS">Non-JUPAS</option>
+                </select>
+                <input type="hidden" id="universitycondition-hidden" name="universitycondition-hidden" value="">
+                <br><br>
+                <button type="reset" id="reset-button">重設</button>
             </form>
         </section>
         <section id="result" style="display:none;">
-            <h2>成績分析結果</h2>
             <div id="result-content"></div>
         </section>
         <section id="error" style="display:none;">
             <h2>錯誤</h2>
             <div id="error-content"></div>
+        </section>
+        <section>
+            <h2>說明</h2>
+            <p>此工具用於分析香港中學文憑試（HKDSE）成績，並估計大學入學條件是否符合JUPAS或Non-JUPAS的要求。請輸入各科成績，然後點擊“分析成績”按鈕。</p>
+            <ul>
+                <li>中文、英文、數學和通識為必填科目。</li>
+                <li>其他科目可根據需要添加。</li>
+                <li>分析結果將顯示各科成績、總分、平均分和估計排名。</li>
+            </ul>
         </section>
     </main>
     <footer>
@@ -179,22 +202,12 @@
     <script>
         document.getElementById('add-subject').addEventListener('click', function() {
             const container = document.getElementById('additional-subjects');
-            const subjectCount = container.getElementsByClassName('subject-group').length + 1;
-            const div = document.createElement('div');
-            div.className = 'subject-group';
-            div.innerHTML = `
-                <label for="subject-name-${subjectCount}">科目名稱:</label>
-                <select name="subject-name-${subjectCount}" class="subject" required>
-                    <option value="Physics">物理</option>
-                    <option value="Chemistry">化學</option>
-                    <option value="Biology">生物</option>
-                    <option value="History">歷史</option>
-                    <option value="Geography">地理</option>
-                    <option value="Economics">經濟</option>
-                    <option value="Business, Accounting and Financial Studies">企業、會計與財務概論</option>
-                    <option value="Information and Communication Technology">資訊及通訊科技</option>
-                </select>
-                <br>
+            const subjectCount = container.children.length + 1;
+            const subjectGroup = document.createElement('div');
+            subjectGroup.className = 'subject-group';
+            subjectGroup.innerHTML = `
+                <label for="subject-${subjectCount}">科目:</label>
+                <input type="text" id="subject-${subjectCount}" name="subject-${subjectCount}" class="subject" placeholder="例如: 物理" required>
                 <label for="level-${subjectCount}">級別:</label>
                 <select name="level-${subjectCount}" class="level" required>
                     <option value="5**">5**</option>
@@ -207,109 +220,89 @@
                     <option value="U">U</option>
                 </select>
                 <button type="button" class="remove-subject">移除</button>
+                <br>
             `;
-            container.appendChild(div);
-        });
-
-        document.getElementById('additional-subjects').addEventListener('click', function(event) {
-            if (event.target.classList.contains('remove-subject')) {
-                event.target.parentElement.remove();
-            }
+            container.appendChild(subjectGroup);
+            subjectGroup.querySelector('.remove-subject').addEventListener('click', function() {
+                container.removeChild(subjectGroup);
+            });
         });
         document.getElementById('analyze-button').addEventListener('click', function() {
-            const resultSection = document.getElementById('result');
-            const errorSection = document.getElementById('error');
-            resultSection.style.display = 'none';
-            errorSection.style.display = 'none';
-            if (!validateInput()) {
-                document.getElementById('error-content').innerHTML = '<p>請確保所有科目均已選擇級別。</p>';
-                errorSection.style.display = 'block';
+            const form = document.getElementById('score-form');
+            const formData = new FormData(form);
+            const subjects = [];
+            for (let [key, value] of formData.entries()) {
+                if (key.startsWith('subject-')) {
+                    const index = key.split('-')[1];
+                    const subjectName = value.trim();
+                    const level = formData.get(`level-${index}`);
+                    if (subjectName && level) {
+                        subjects.push({ name: subjectName, level: level });
+                    }
+                }
+            }
+            const universityCondition = formData.get('universitycondition');
+            if (!subjects.some(s => s.name === 'Chinese Language') || !subjects.some(s => s.name === 'English Language') || !subjects.some(s => s.name === 'Mathematics') || !subjects.some(s => s.name === 'CS')) {
+                displayError('請確保已輸入中文、英文、數學和通識成績。');
                 return;
             }
-            analyzeScores();
+            analyzeScores(subjects, universityCondition);
         });
-        function validateInput() {
-            const levels = document.getElementsByClassName('level');
-            for (let level of levels) {
-                if (!level.value) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        function analyzeScores() {
-            const subjects = document.getElementsByClassName('subject');
-            const levels = document.getElementsByClassName('level');
-            let totalScore = 0;
-            let validSubjects = 0;
-            let results = [];
-            for (let i = 0; i < subjects.length; i++) {
-                const subject = subjects[i].value;
-                const level = levels[i].value;
-                let score = 0;
-                switch(level) {
-                    case '5**': score = 7; break;
-                    case '5*': score = 6; break;
-                    case '5': score = 5; break;
-                    case '4': score = 4; break;
-                    case '3': score = 3; break;
-                    case '2': score = 2; break;
-                    case '1': score = 1; break;
-                    case 'U': score = 0; break;
-                }
-                if (subject === 'CS' && level === 'U') {
-                    score = 0;
-                }
-                if (subject === 'CS' && level !== 'U') {
-                    score = 1; // 通識及格計1分
-                } 
-                if (score > 0) {
-                    totalScore += score;
-                    validSubjects++;
-                }
-                results.push({subject, level, score});
-            }
-            const averageScore = validSubjects > 0 ? (totalScore / validSubjects).toFixed(2) : 0;
-            displayResults(results, universitycondition, averageScore, estimateRank(totalScore));
-        }
-        function displayResults(results, universitycondition, averageScore, estimatedRank) {
-            let resultHTML = '<ul>';
-            results.forEach(res => {
-                resultHTML += `<li>${res.subject}: 級別 ${res.level} - 分數 ${res.score}</li>`;
+        document.getElementById('reset-button').addEventListener('click', function() {
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            const container = document.getElementById('additional-subjects');
+            container.innerHTML = '';
+        });
+        function analyzeScores(subjects, universityCondition) {
+            const levelPoints = {
+                '5**': 7,
+                '5*': 6,
+                '5': 5,
+                '4': 4,
+                '3': 3,
+                '2': 2,
+                '1': 1,
+                'U': 0,
+                'pass': 1,
+                'not pass': 0
+            };
+            let totalPoints = 0;
+            let validSubjectsCount = 0;
+            let resultHtml = '<h2>分析結果</h2><ul>';
+            subjects.forEach(subject => {
+                const points = levelPoints[subject.level] || 0;
+                totalPoints += points;
+                if (points > 0) validSubjectsCount++;
+                resultHtml += `<li>${subject.name}: ${subject.level} (${points}分)</li>`;
             });
-            resultHTML += '</ul>';
-            resultHTML += `<strong>大學入學條件: ${universitycondition}</strong>`;
-            if (universitycondition === 'JUPAS') {
-                resultHTML += `<strong>JUPAS 入學條件: 33222</strong>`;
-                if (results.some(r => r.subject === 'Chinese Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
-                    results.some(r => r.subject === 'English Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
-                    results.some(r => r.subject === 'Mathematics' && (r.level === '2' || r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
-                    results.some(r => r.subject === 'CS' && r.level !== 'U') &&
-                    results.filter(r => r.subject !== 'Chinese Language' && r.subject !== 'English Language' && r.subject !== 'Mathematics' && r.subject !== 'CS' && r.level !== 'U').length >= 2) {
-                    resultHTML += `<strong>符合 JUPAS 入學條件</strong>`;
-                }
-            } else if (universitycondition === 'Non-JUPAS') {
-                resultHTML += `<strong>Non-JUPAS 入學條件: 33333</strong>`;
-                if (results.some(r => r.subject === 'Chinese Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
-                    results.some(r => r.subject === 'English Language' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
-                    results.some(r => r.subject === 'Mathematics' && (r.level === '3' || r.level === '4' || r.level === '5' || r.level === '5*' || r.level === '5**')) &&
-                    results.some(r => r.subject === 'CS' && r.level !== 'U') &&
-                    results.filter(r => r.subject !== 'Chinese Language' && r.subject !== 'English Language' && r.subject !== 'Mathematics' && r.subject !== 'CS' && r.level !== 'U').length >= 3) {
-                    resultHTML += `<strong>符合 Non-JUPAS 入學條件</strong>`;
-                }
+            resultHtml += '</ul>';
+            const averagePoints = (validSubjectsCount > 0) ? (totalPoints / validSubjectsCount).toFixed(2) : 0;
+            resultHtml += `<strong>總分: ${totalPoints}</strong>`;
+            resultHtml += `<strong>平均分: ${averagePoints}</strong>`;
+            let estimatedRank = '未知';
+            if (averagePoints >= 5) {
+                estimatedRank = '1-10%';
+            } else if (averagePoints >= 4) {
+                estimatedRank = '11-30%';
+            } else if (averagePoints >= 3) {
+                estimatedRank = '31-50%';
+            } else if (averagePoints >= 2) {
+                estimatedRank = '51-70%';
+            } else if (averagePoints >= 1) {
+                estimatedRank = '71-100%';
+            } else {
+                estimatedRank = '未達標';
             }
-            resultHTML += `<strong>總分: ${results.reduce((acc, cur) => acc + cur.score, 0)}</strong>`;
-            resultHTML += `<strong>平均分: ${averageScore}</strong>`;
-            resultHTML += `<strong>估計排名: ${estimatedRank}</strong>`;
-            document.getElementById('result-content').innerHTML = resultHTML;
+            resultHtml += `<strong>估計排名: ${estimatedRank}</strong>`;
+            document.getElementById('result-content').innerHTML = resultHtml;
             document.getElementById('result').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
         }
-        function estimateRank(totalScore) {
-            if (totalScore >= 30) return '前1%';
-            if (totalScore >= 25) return '前5%';
-            if (totalScore >= 20) return '前10%';
-            if (totalScore >= 15) return '前20%';
-            return '20%以上';
+        function displayError(message) {
+            document.getElementById('error-content').innerHTML = `<p>${message}</p>`;
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
         }
     </script>
 </body>
