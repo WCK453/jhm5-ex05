@@ -186,7 +186,17 @@
             div.className = 'subject-group';
             div.innerHTML = `
                 <label for="subject-name-${subjectCount}">科目名稱:</label>
-                <input type="text" id="subject-name-${subjectCount}" name="subject-name-${subjectCount}" required>
+                <select name="subject-name-${subjectCount}" class="subject" required>
+                    <option value="Physics">物理</option>
+                    <option value="Chemistry">化學</option>
+                    <option value="Biology">生物</option>
+                    <option value="History">歷史</option>
+                    <option value="Geography">地理</option>
+                    <option value="Economics">經濟</option>
+                    <option value="Business, Accounting and Financial Studies">企業、會計與財務概論</option>
+                    <option value="Information and Communication Technology">資訊及通訊科技</option>
+                </select>
+                <br>
                 <label for="level-${subjectCount}">級別:</label>
                 <select name="level-${subjectCount}" class="level" required>
                     <option value="5**">5**</option>
@@ -207,6 +217,13 @@
             if (event.target.classList.contains('remove-subject')) {
                 event.target.parentElement.remove();
             }
+        });
+        addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('score-form');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                analyzeScores();
+            });
         });
     </script>
 </body>
